@@ -1,30 +1,47 @@
-// import express from 'express';
+const { ApolloServer, gql } = require('apollo-server');
 
-// import resolvers from './resolvers'
+// A schema is a collection of type definitions (hence "typeDefs")
+// that together define the "shape" of queries that are executed against
+// your data.
+const typeDefs = gql`
+  # Comments in GraphQL strings (such as this one) start with the hash (#) symbol.
 
-// import schema from './schema';
+  # This "Book" type defines the queryable fields for every book in our data source.
+  type Book {
+    title: String
+    author: String
+  }
 
-// import { graphqlHTTP } from 'express-graphql'
+  # The "Query" type is special: it lists all of the available queries that
+  # clients can execute, along with the return type for each. In this
+  # case, the "books" query returns an array of zero or more Books (defined above).
+  type Query {
+    books: [Book]
+  }
+`;
 
-const express = require('express')
-const resolvers = require('./resolvers')
-const schema = require('./schema')
-const {graphqlHTTP} = require('express-graphql')
+const books = [
+  {
+    title: 'The Awakening',
+    author: 'Kate Chopin',
+  },
+  {
+    title: 'City of Glass',
+    author: 'Paul Auster',
+  },
+];
 
-const app = express()
+const resolvers = {
+  Query: {
+    books: () => books,
+  },
+};
 
-app.get('/' , (req, res)=>{
-    res.send("Up and running with graphql crash course")
-})
+// The ApolloServer constructor requires two parameters: your schema
+// definition and your set of resolvers.
+const server = new ApolloServer({ typeDefs, resolvers });
 
-// const root = {lco: () => console.log("Learning")}
-
-const root = resolvers
-
-app.use('/graphql', graphqlHTTP({
-    schema: schema,
-    graphiql: true,
-    rootValue: root
-}))
-
-app.listen(8082, () => console.log('Running at 8082'));
+// The `listen` method launches a web server.
+server.listen().then(({ url }) => {
+  console.log(`🚀  Server ready at ${url}`);
+});

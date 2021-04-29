@@ -1,7 +1,8 @@
 // import {buildSchema} from 'graphql'
-const {buildSchema} = require('graphql')
+// const {buildSchema} = require('graphql')
+const { ApolloServer, gql } = require('apollo-server-express');
 
-const schema = buildSchema(`
+const schema = gql`
     type Course {
         id: ID
         courseName: String
@@ -46,7 +47,7 @@ const schema = buildSchema(`
     type Mutation {
         createCourse(input: CourseInput): Course
     }
-`)
+`
 
 module.exports = schema;
 
